@@ -60,8 +60,18 @@ RUN cd / ;\
     tar -C /usr/local -xzf libtensorflow-cpu-linux-x86_64-2.8.0.tar.gz ;\
     ldconfig /usr/local/lib
 
-RUN echo gcc -I/usr/local/include -L/usr/local/lib hello_tf.c -ltensorflow -o hello_tf > /tmp/build.sh ;\
-    chmod +x /tmp/build.sh
+RUN echo gcc -I/usr/local/include -L/usr/local/lib hello_tf.c -ltensorflow -o hello_tf > /tmp/01_build.sh ;\
+    chmod +x /tmp/01_build.sh
+
+RUN echo "#!/bin/bash" > /tmp/02_gen_model.sh ;\
+    echo python3 model.py >> /tmp/02_gen_model.sh ;\
+    chmod +x /tmp/02_gen_model.sh
+
+RUN echo "#!/bin/bash" > /tmp/03_print_model_struct.sh ;\
+    echo saved_model_cli show --dir /tmp/model >> /tmp/03_print_model_struct.sh ;\
+    echo saved_model_cli show --dir /tmp/model --tag_set serve >> /tmp/03_print_model_struct.sh ;\
+    echo saved_model_cli show --dir /tmp/model --tag_set serve --signature_def serving_default >> /tmp/03_print_model_struct.sh ;\
+    chmod +x /tmp/03_print_model_struct.sh
 
 # refer to the blog by AmirulOm, try integrate the TF model to c
 # cf https://github.com/AmirulOm/tensorflow_capi_sample
